@@ -27,12 +27,14 @@ def get_data_dim(dataset):
     :param dataset: Name of dataset
     :return: Number of dimensions in data
     """
-    if dataset == "SMAP":
+    if dataset in ["SMAP", 'mypkg_SMAP']:
         return 25
-    elif dataset == "MSL":
+    elif dataset in ["MSL", 'mypkg_MSL']:
         return 55
-    elif str(dataset).startswith("machine"):
+    elif str(dataset).startswith("machine") or dataset in ['mypkg_SMD']:
         return 38
+    elif dataset in ['mypkg_SWaT']:
+        return 51
     else:
         raise ValueError("unknown dataset " + str(dataset))
 
@@ -43,11 +45,11 @@ def get_target_dims(dataset):
     :return: index of data dimension that should be modeled (forecasted and reconstructed),
                      returns None if all input dimensions should be modeled
     """
-    if dataset == "SMAP":
+    if dataset in ["SMAP", 'mypkg_SMAP']:
         return [0]
-    elif dataset == "MSL":
+    elif dataset in ["MSL", 'mypkg_MSL']:
         return [0]
-    elif dataset == "SMD":
+    elif dataset in ["SMD", 'mypkg_SMD', 'mypkg_SWaT']:
         return None
     else:
         raise ValueError("unknown dataset " + str(dataset))
@@ -66,6 +68,8 @@ def get_data(dataset, max_train_size=None, max_test_size=None,
         prefix += "/ServerMachineDataset/processed"
     elif dataset in ["MSL", "SMAP"]:
         prefix += "/data/processed"
+    else:
+        prefix += f"/{dataset}/processed"
     if max_train_size is None:
         train_end = None
     else:
