@@ -35,6 +35,8 @@ def get_data_dim(dataset):
         return 38
     elif dataset in ['mypkg_SWaT']:
         return 51
+    elif dataset in ['mypkg_WADI']:
+        return 128
     else:
         raise ValueError("unknown dataset " + str(dataset))
 
@@ -49,7 +51,7 @@ def get_target_dims(dataset):
         return [0]
     elif dataset in ["MSL", 'mypkg_MSL']:
         return [0]
-    elif dataset in ["SMD", 'mypkg_SMD', 'mypkg_SWaT']:
+    elif dataset in ["SMD", 'mypkg_SMD', 'mypkg_SWaT', 'mypkg_WADI']:
         return None
     else:
         raise ValueError("unknown dataset " + str(dataset))
