@@ -1,7 +1,7 @@
 import numpy as np
 import more_itertools as mit
 from spot import SPOT, dSPOT
-
+from sklearn.metrics import roc_auc_score
 
 def adjust_predicts(score, label, threshold, pred=None, calc_latency=False):
     """
@@ -70,7 +70,11 @@ def calc_point2point(predict, actual):
     precision = TP / (TP + FP + 0.00001)
     recall = TP / (TP + FN + 0.00001)
     f1 = 2 * precision * recall / (precision + recall + 0.00001)
-    return f1, precision, recall, TP, TN, FP, FN
+    try:
+        roc_auc = roc_auc_score(actual, predict)
+    except:
+        roc_auc = 0
+    return f1, precision, recall, TP, TN, FP, FN, roc_auc
 
 
 def pot_eval(init_score, score, label, q=1e-3, level=0.99, dynamic=False):
@@ -108,6 +112,7 @@ def pot_eval(init_score, score, label, q=1e-3, level=0.99, dynamic=False):
             "TN": p_t[4],
             "FP": p_t[5],
             "FN": p_t[6],
+            'ROC/AUC': p_t[7],
             "threshold": pot_th,
             "latency": p_latency,
         }
@@ -152,6 +157,7 @@ def bf_search(score, label, start, end=None, step_num=1, display_freq=1, verbose
         "TN": m[4],
         "FP": m[5],
         "FN": m[6],
+        'ROC/AUC': m[7],
         "threshold": m_t,
         "latency": m_l,
     }
@@ -175,6 +181,7 @@ def epsilon_eval(train_scores, test_scores, test_labels, reg_level=1):
             "TN": p_t[4],
             "FP": p_t[5],
             "FN": p_t[6],
+            'ROC/AUC': p_t[7],
             "threshold": best_epsilon,
             "latency": p_latency,
             "reg_level": reg_level,

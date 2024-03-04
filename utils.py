@@ -218,10 +218,15 @@ def adjust_anomaly_scores(scores, dataset, is_train, lookback):
     :param dataset: name of dataset
     :param is_train: if scores is from train set
     :param lookback: lookback (window size) used in model
+
+    What this function does:
+    Takes each concatenated segment of data, sets all values before and after each concatenation
+    point and sets them to zero, then normalizes the data in each segment separately
+    See: https://github.com/ML4ITS/mtad-gat-pytorch/issues/4
     """
 
     # Remove errors for time steps when transition to new channel (as this will be impossible for model to predict)
-    if dataset.upper() not in ['SMAP', 'MSL']:
+    if dataset.upper() not in ['SMAP', 'MSL', 'mypkg_SMAP', 'mypkg_MSL']:
         return scores
 
     adjusted_scores = scores.copy()
@@ -231,7 +236,8 @@ def adjust_anomaly_scores(scores, dataset, is_train, lookback):
         md = pd.read_csv('./datasets/data/labeled_anomalies.csv')
         md = md[md['spacecraft'] == dataset.upper()]
 
-    md = md[md['chan_id'] != 'P-2']
+    if dataset.upper() in ['SMAP', 'MSL']:
+        md = md[md['chan_id'] != 'P-2']
 
     # Sort values by channel
     md = md.sort_values(by=['chan_id'])
@@ -240,6 +246,8 @@ def adjust_anomaly_scores(scores, dataset, is_train, lookback):
     sep_cuma = np.cumsum(md['num_values'].values) - lookback
     sep_cuma = sep_cuma[:-1]
     buffer = np.arange(1, 20)
+    # For each index that the channels were concatenated, create an array of indices containing all indices 20 before and after
+    #   (inclusive) for each concatenation point
     i_remov = np.sort(np.concatenate((sep_cuma, np.array([i+buffer for i in sep_cuma]).flatten(),
                                       np.array([i-buffer for i in sep_cuma]).flatten())))
     i_remov = i_remov[(i_remov < len(adjusted_scores)) & (i_remov >= 0)]
