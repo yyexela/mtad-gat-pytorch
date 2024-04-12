@@ -36,7 +36,7 @@ if __name__ == "__main__":
     if dataset == 'SMD':
         output_path = f'output/SMD/{args.group}'
         (x_train, _), (x_test, y_test) = get_data(f"machine-{group_index}-{index}", normalize=normalize)
-    elif dataset in ['MSL', 'SMAP', 'mypkg_MSL', 'mypkg_SMAP', 'mypkg_SMD', 'mypkg_SWaT', 'mypkg_WADI']:
+    elif dataset in ['MSL', 'SMAP', 'mypkg_MSL', 'mypkg_SMAP', 'mypkg_SMD', 'mypkg_SWaT', 'mypkg_WADI', 'mypkg_DSN_1k']:
         output_path = f'output/{dataset}'
         (x_train, _), (x_test, y_test) = get_data(dataset, normalize=normalize)
     else:
@@ -133,7 +133,8 @@ if __name__ == "__main__":
         "mypkg_MSL": (0.90, 0.001),
         "mypkg_SMD": (0.9950, 0.001), # Borrowed from SMD-1
         "mypkg_SWaT": (0.9950, 0.001), # Total guess
-        "mypkg_WADI": (0.9950, 0.001) # Total guess
+        "mypkg_WADI": (0.9950, 0.001), # Total guess
+        "mypkg_DSN_1k": (0.9950, 0.001) # Total guess
     }
     key = "SMD-" + args.group[0] if args.dataset == "SMD" else args.dataset
     level, q = level_q_dict[key]
@@ -143,7 +144,7 @@ if __name__ == "__main__":
         q = args.q
 
     # Some suggestions for Epsilon args
-    reg_level_dict = {"SMAP": 0, "MSL": 0, "SMD-1": 1, "SMD-2": 1, "SMD-3": 1, "mypkg_SMD": 1, "mypkg_MSL": 0, "mypkg_SMAP": 0, "mypkg_SWaT": 0, "mypkg_WADI": 0}
+    reg_level_dict = {"SMAP": 0, "MSL": 0, "SMD-1": 1, "SMD-2": 1, "SMD-3": 1, "mypkg_SMD": 1, "mypkg_MSL": 0, "mypkg_SMAP": 0, "mypkg_SWaT": 0, "mypkg_WADI": 0, "mypkg_DSN_1k": 0}
     key = "SMD-" + args.group[0] if dataset == "SMD" else dataset
     reg_level = reg_level_dict[key]
 
